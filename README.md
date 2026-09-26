@@ -1,18 +1,18 @@
-# Armin Web
+# Prompt Box Web
 
-Armin Web is the public-facing web application of the Armin Template ecosystem.
+Prompt Box Web is the public-facing web application for **Prompt Box**, a digital-product application built on the Armin Web Template foundation.
 
-It is a separate Next.js application that consumes the Armin API and provides the public product discovery and presentation experience.
+It is a separate Next.js application that consumes the Prompt Box API and provides the public product discovery, presentation, authentication, and user experience.
 
-## Role in the Armin Ecosystem
+## Role in the Prompt Box Ecosystem
 
-Armin consists of three independent applications:
+Prompt Box consists of three independent applications:
 
-* **Armin API** — Laravel backend and source of truth for business rules, authorization, data, orders, payments, and subscriptions.
-* **Armin Admin** — React-based administrative interface for management workflows.
-* **Armin Web** — Next.js public-facing web application.
+* **Prompt Box API** — Laravel backend and source of truth for business rules, authorization, data, orders, payments, subscriptions, and protected content.
+* **Prompt Box Admin** — React-based administrative interface for management workflows.
+* **Prompt Box Web** — Next.js public-facing web application for the Prompt Box product experience.
 
-The Web application is responsible for public presentation and user experience. Authoritative business rules, authorization, pricing, payments, and access decisions remain in the API.
+The Web application is responsible for public presentation and user experience. Authoritative business rules, authorization, pricing, payments, and access decisions remain in the Prompt Box API.
 
 ## Tech Stack
 
@@ -30,7 +30,7 @@ The Web application is responsible for public presentation and user experience. 
 
 * Node.js
 * npm
-* A running Armin API instance
+* A running Prompt Box API instance
 
 ## Environment
 
@@ -40,13 +40,13 @@ Create a local environment file:
 cp .env.example .env.local
 ```
 
-The default development configuration is:
+Set the API base URL to the Prompt Box API:
 
 ```env
 NEXT_PUBLIC_API_BASE_URL=http://localhost:8080/api/v1
 ```
 
-Set `NEXT_PUBLIC_API_BASE_URL` to the base URL of the Armin API used by the Web application.
+For production, configure the environment according to the target Prompt Box deployment.
 
 ## Development
 
@@ -78,84 +78,37 @@ Run ESLint:
 npm run lint
 ```
 
-Start the production server:
+## Architecture
 
-```bash
-npm run start
-```
-
-## Current Application Scope
-
-The Web application provides the public-facing experience, including:
-
-* Home page
-* Public item catalog
-* Item discovery
-* Search
-* Category filtering
-* Sorting
-* Item detail pages
-* Responsive layouts
-* Persian and English localization
-* RTL and LTR presentation
-* Dark-oriented visual design
-* Public account and authentication flows
-
-## Repository Structure
-
-The application source code is located in:
-
-```text
-src/
-```
-
-The Web application is intentionally maintained as an independent frontend repository and does not depend on the implementation details of the Admin application.
-
-## Relationship to the API
-
-The Armin API is the authoritative backend.
+Prompt Box Web follows the reusable architecture established by the **Armin Web Template**.
 
 The Web application is responsible for:
 
-* Public routing
-* Page presentation
-* Catalog and discovery UX
-* Search, filtering, and sorting interfaces
-* Responsive public UX
-* Localization
-* SEO-oriented presentation
+* Public product discovery and presentation
+* Authentication and account-related user experience
+* Product and content presentation
+* Client-side interactions and navigation
+* API communication
+* Responsive and localized user interface
 
-The Web application does not make authoritative decisions about:
+Business rules, authorization decisions, pricing, payments, subscriptions, and access control remain the responsibility of the Prompt Box API.
 
-* Authorization
-* Pricing
-* Payment status
-* Subscription validity
-* User entitlements
-* Protected content access
+## Armin Foundation
 
-Those decisions belong to the API.
+Prompt Box Web was created from the stable **Armin Web Template**.
 
-## Armin Template
+The Template provides the reusable application foundation, while Prompt Box contains product-specific requirements, UI, content, branding, and configuration.
 
-Armin Web is part of the reusable Armin Template ecosystem.
+Product-specific changes should remain in Prompt Box. Reusable architectural improvements should only be introduced into the Armin Web Template when they represent a genuine requirement that benefits multiple product instances.
 
-The central Armin Template documentation is maintained separately in the API repository. Product-specific work belongs to the product instance created from the Template.
+## Repository
 
-For example:
+GitHub:
 
-```text
-Armin Template
-      ↓
-Product Instance
-      ↓
-Armin Web
-      ↓
-Product-specific public experience
-```
+`git@github.com:dxmersila/prompt-box-web.git`
 
 ## Status
 
-**Complete / Stable**
+**Productionization in Progress**
 
-The current Web application represents the stable public-facing baseline of the Armin Template.
+Prompt Box Web is the public-facing application for the Prompt Box product instance and is being prepared for production use.
