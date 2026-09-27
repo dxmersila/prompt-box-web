@@ -106,6 +106,8 @@
     "loadingContent": "Loading content",
     "contentTitle": "Your Content",
     "contentDescription": "This content is available with your current access.",
+    "copyPrompt": "Copy Prompt",
+    "copiedPrompt": "Copied",
     "contentUnavailable": "Content unavailable",
     "contentUnavailableDescription": "We couldn't load this content. Your access may no longer be available.",
     "backToItem": "Back to Prompt"

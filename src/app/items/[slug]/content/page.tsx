@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { ArrowRight, LockOpen, XCircle } from 'lucide-react'
+import { ArrowRight, Check, Copy, LockOpen, XCircle } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
 import { useAuth } from '@/components/auth/AuthProvider'
@@ -30,6 +30,7 @@ export default function ItemContentPage({
   const [slug, setSlug] = useState('')
   const [content, setContent] = useState('')
   const [state, setState] = useState<ContentState>('loading')
+  const [isCopied, setIsCopied] = useState(false)
 
   useEffect(() => {
     if (status === 'guest') {
@@ -80,6 +81,19 @@ export default function ItemContentPage({
       isCurrent = false
     }
   }, [params, router, status])
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(content)
+      setIsCopied(true)
+
+      window.setTimeout(() => {
+        setIsCopied(false)
+      }, 2000)
+    } catch {
+      setIsCopied(false)
+    }
+  }
 
   if (status === 'loading' || status === 'guest') {
     return null
@@ -157,6 +171,22 @@ export default function ItemContentPage({
       </div>
 
       <section className="rounded-3xl border border-border bg-surface p-6 shadow-[0_20px_70px_-45px_rgba(124,58,237,0.45)] sm:p-8">
+        <div className="mb-5 flex items-center justify-end">
+          <button
+            type="button"
+            onClick={handleCopy}
+            className="inline-flex h-10 items-center gap-2 rounded-xl border border-border px-3 text-sm font-medium text-foreground transition hover:border-primary/30 hover:text-primary focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20"
+            aria-label={t(isCopied ? 'item.copiedPrompt' : 'item.copyPrompt')}
+          >
+            {isCopied ? (
+              <Check className="size-4" />
+            ) : (
+              <Copy className="size-4" />
+            )}
+            {t(isCopied ? 'item.copiedPrompt' : 'item.copyPrompt')}
+          </button>
+        </div>
+
         <div className="whitespace-pre-wrap text-sm leading-7 text-foreground sm:text-base">
           {content}
         </div>

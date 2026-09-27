@@ -106,6 +106,8 @@
     "loadingContent": "در حال بارگذاری محتوا",
     "contentTitle": "محتوای شما",
     "contentDescription": "این محتوا با دسترسی فعلی شما در دسترس است.",
+    "copyPrompt": "کپی پرامپت",
+    "copiedPrompt": "کپی شد",
     "contentUnavailable": "محتوا در دسترس نیست",
     "contentUnavailableDescription": "نتوانستیم محتوا را بارگذاری کنیم. ممکن است دسترسی شما دیگر فعال نباشد.",
     "backToItem": "بازگشت به پرامپت"
