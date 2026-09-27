@@ -114,7 +114,7 @@ export default function ItemActions({ item }: ItemActionsProps) {
           className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-85"
         >
           <LockOpen className="size-4" />
-          {t('item.access')}
+          {t('item.usePrompt')}
           <ArrowRight className="size-4 rtl:rotate-180" />
         </Link>
       ) : isInCart && !isFree ? (
@@ -148,6 +148,9 @@ export default function ItemActions({ item }: ItemActionsProps) {
                 setIsClaiming(true)
                 await claimFreeItem(item.slug, token)
                 setHasAccess(true)
+                router.push(
+                  `/items/${encodeURIComponent(item.slug)}/content`,
+                )
               } catch {
                 setHasAccess(false)
               } finally {
@@ -166,7 +169,7 @@ export default function ItemActions({ item }: ItemActionsProps) {
           ) : isFree ? (
             <>
               <LockOpen className="size-4" />
-              {t('item.getAccess')}
+              {t('item.getPrompt')}
             </>
           ) : (
             <>
