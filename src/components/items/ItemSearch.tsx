@@ -33,17 +33,20 @@ export default function ItemSearch({
       <div className="flex gap-2">
         <button
           type="submit"
-          className="inline-flex h-12 flex-1 items-center justify-center rounded-xl bg-primary px-5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-85 sm:flex-none"
+          className="inline-flex h-12 flex-1 items-center justify-center rounded-xl bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:opacity-85 sm:flex-none"
         >
-          {t('items.search')}
+          <span className="flex items-center justify-center gap-1.5">
+            <Search className="size-3.5" />
+            <span>{t('items.search')}</span>
+          </span>
         </button>
 
         {activeSearch && (
           <Link
             href="/items"
-            className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-border bg-surface px-4 text-sm font-medium text-muted transition hover:border-foreground/20 hover:text-foreground"
+            className="inline-flex h-12 items-center justify-center gap-1.5 rounded-xl border border-border bg-surface px-4 text-sm font-medium text-muted transition hover:border-foreground/20 hover:text-foreground"
           >
-            <X className="size-4" />
+            <X className="size-3.5" />
             {t('items.clear')}
           </Link>
         )}
