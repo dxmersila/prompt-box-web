@@ -1,10 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import { SlidersHorizontal } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { useSearchParams } from 'next/navigation'
+import { useEffect, useRef, useState } from 'react'
 
-import Dropdown from '@/components/ui/Dropdown'
 import type { Category } from '@/types/category'
 import { useTranslations } from '@/hooks/useTranslations'
 
@@ -13,105 +13,127 @@ interface ItemFiltersProps {
   activeCategory?: string
 }
 
-const DESKTOP_VISIBLE_CATEGORY_COUNT = 4
-
 export default function ItemFilters({
   categories,
   activeCategory,
 }: ItemFiltersProps) {
-  const router = useRouter()
+  const searchParams = useSearchParams()
   const t = useTranslations()
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const [canScrollLeft, setCanScrollLeft] = useState(false)
+  const [canScrollRight, setCanScrollRight] = useState(false)
 
-  const visibleCategories = categories.slice(
-    0,
-    DESKTOP_VISIBLE_CATEGORY_COUNT,
-  )
+  const buildCategoryHref = (category: string) => {
+    const params = new URLSearchParams(searchParams.toString())
 
-  const moreCategories = categories.slice(
-    DESKTOP_VISIBLE_CATEGORY_COUNT,
-  )
+    if (category) {
+      params.set('category', category)
+    } else {
+      params.delete('category')
+    }
 
-  const categoryOptions = categories.map((category) => ({
-    value: category.slug,
-    label: category.name,
-  }))
+    params.delete('page')
 
-  const navigateToCategory = (value: string) => {
-    router.push(
-      value
-        ? `/items?category=${encodeURIComponent(value)}`
-        : '/items',
+    const query = params.toString()
+
+    return `/items${query ? `?${query}` : ''}`
+  }
+
+  const updateScrollState = () => {
+    const element = scrollRef.current
+
+    if (!element) {
+      return
+    }
+
+    setCanScrollLeft(element.scrollLeft > 0)
+    setCanScrollRight(
+      element.scrollLeft + element.clientWidth < element.scrollWidth - 1,
     )
   }
 
+  useEffect(() => {
+    updateScrollState()
+
+    const element = scrollRef.current
+
+    if (!element) {
+      return
+    }
+
+    element.addEventListener('scroll', updateScrollState)
+    window.addEventListener('resize', updateScrollState)
+
+    return () => {
+      element.removeEventListener('scroll', updateScrollState)
+      window.removeEventListener('resize', updateScrollState)
+    }
+  }, [categories])
+
+  const scrollCategories = (direction: 'left' | 'right') => {
+    scrollRef.current?.scrollBy({
+      left: direction === 'left' ? -240 : 240,
+      behavior: 'smooth',
+    })
+  }
+
   return (
-    <>
-      <div className="lg:hidden">
-        <Dropdown
-          value={activeCategory ?? ''}
-          placeholder={t('filters.category')}
-          icon={<SlidersHorizontal className="size-4" />}
-          options={[
-            {
-              value: '',
-              label: t('filters.all'),
-            },
-            ...categoryOptions,
-          ]}
-          onChange={navigateToCategory}
-          className="w-full sm:w-[13rem]"
-        />
-      </div>
-
-      <div className="hidden items-center gap-2 lg:flex">
-        <Link
-          href="/items"
-          className={[
-            'shrink-0 rounded-full border px-4 py-2 text-sm font-medium transition',
-            !activeCategory
-              ? 'border-primary bg-primary text-primary-foreground'
-              : 'border-border bg-surface text-muted hover:border-foreground/20 hover:text-foreground',
-          ].join(' ')}
+    <div className="flex min-w-0 items-center gap-2">
+      {canScrollLeft && (
+        <button
+          type="button"
+          aria-label="Scroll categories left"
+          onClick={() => scrollCategories('left')}
+          className="flex shrink-0 rounded-full border border-border bg-surface p-2 text-muted transition hover:border-foreground/20 hover:text-foreground"
         >
-          {t('filters.all')}
-        </Link>
+          <ChevronLeft className="size-4" />
+        </button>
+      )}
 
-        {visibleCategories.map((category) => (
+      <div
+        ref={scrollRef}
+        className="category-scrollbar min-w-0 flex-1 overflow-x-auto"
+      >
+        <div className="flex min-w-max items-center gap-1">
           <Link
-            key={category.id}
-            href={`/items?category=${encodeURIComponent(category.slug)}`}
+            href={buildCategoryHref('')}
             className={[
-              'shrink-0 rounded-full border px-4 py-2 text-sm font-medium transition',
-              activeCategory === category.slug
+              'shrink-0 rounded-full border px-2.5 py-2 text-sm font-medium transition lg:px-2',
+              !activeCategory
                 ? 'border-primary bg-primary text-primary-foreground'
                 : 'border-border bg-surface text-muted hover:border-foreground/20 hover:text-foreground',
             ].join(' ')}
           >
-            {category.name}
+            {t('filters.all')}
           </Link>
-        ))}
 
-        {moreCategories.length > 0 && (
-          <Dropdown
-            value={
-              moreCategories.some(
-                (category) => category.slug === activeCategory,
-              )
-                ? activeCategory ?? ''
-                : ''
-            }
-            placeholder={t('filters.moreCategories')}
-            options={[
-              ...moreCategories.map((category) => ({
-                value: category.slug,
-                label: category.name,
-              })),
-            ]}
-            onChange={navigateToCategory}
-            className="w-40"
-          />
-        )}
+          {categories.map((category) => (
+            <Link
+              key={category.id}
+              href={buildCategoryHref(category.slug)}
+              className={[
+                'shrink-0 rounded-full border px-2.5 py-2 text-sm font-medium transition lg:px-2',
+                activeCategory === category.slug
+                  ? 'border-primary bg-primary text-primary-foreground'
+                  : 'border-border bg-surface text-muted hover:border-foreground/20 hover:text-foreground',
+              ].join(' ')}
+            >
+              {category.name}
+            </Link>
+          ))}
+        </div>
       </div>
-    </>
+
+      {canScrollRight && (
+        <button
+          type="button"
+          aria-label="Scroll categories right"
+          onClick={() => scrollCategories('right')}
+          className="flex shrink-0 rounded-full border border-border bg-surface p-2 text-muted transition hover:border-foreground/20 hover:text-foreground"
+        >
+          <ChevronRight className="size-4" />
+        </button>
+      )}
+    </div>
   )
 }

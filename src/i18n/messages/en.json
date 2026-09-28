@@ -116,6 +116,8 @@
   },
   "filters": {
     "all": "All",
+    "free": "Free",
+    "paid": "Paid",
     "latest": "Latest",
     "oldest": "Oldest",
     "category": "Category",

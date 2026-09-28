@@ -7,6 +7,7 @@ export interface ItemListParams {
   search?: string
   category?: string
   tag?: string
+  access_type?: 'free' | 'paid'
   sort?: 'latest' | 'oldest' | 'title'
 }
 
@@ -29,6 +30,10 @@ export async function listItems(
 
   if (params.tag) {
     searchParams.set('tag', params.tag)
+  }
+
+  if (params.access_type) {
+    searchParams.set('access_type', params.access_type)
   }
 
   if (params.sort) {
