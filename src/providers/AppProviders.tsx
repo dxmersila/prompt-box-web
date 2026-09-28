@@ -1,6 +1,7 @@
 'use client'
 
 import ThemeProvider from './ThemeProvider'
+import DocumentTitle from '@/components/layout/DocumentTitle'
 import I18nProvider from '@/i18n/I18nProvider'
 import { LocaleProvider } from '@/i18n/LocaleProvider'
 import { AuthProvider } from '@/components/auth/AuthProvider'
@@ -14,6 +15,7 @@ export default function AppProviders({
   return (
     <ThemeProvider>
       <LocaleProvider>
+        <DocumentTitle />
         <I18nProvider>
           <AuthProvider>
             <CartProvider>

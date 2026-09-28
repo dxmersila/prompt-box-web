@@ -5,7 +5,7 @@ import Footer from '@/components/layout/Footer'
 import AppProviders from '@/providers/AppProviders'
 
 export const metadata: Metadata = {
-  title: 'Armin',
+  title: 'Prompt Box',
   description: 'Armin Web Application',
 }
 
