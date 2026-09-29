@@ -4,6 +4,24 @@ type RequestOptions = RequestInit & {
   token?: string
 }
 
+export interface ApiError {
+  message?: string
+  code?: string
+  status: number
+}
+
+export class ApiRequestError extends Error {
+  readonly code?: string
+  readonly status: number
+
+  constructor({ message, code, status }: ApiError) {
+    super(message ?? `API request failed with status ${status}`)
+    this.name = 'ApiRequestError'
+    this.code = code
+    this.status = status
+  }
+}
+
 export async function apiClient<T>(
   path: string,
   options: RequestOptions = {},
@@ -21,7 +39,26 @@ export async function apiClient<T>(
   })
 
   if (!response.ok) {
-    throw new Error(`API request failed with status ${response.status}`)
+    let error: ApiError = {
+      status: response.status,
+    }
+
+    try {
+      const data = (await response.json()) as {
+        message?: string
+        code?: string
+      }
+
+      error = {
+        message: data.message,
+        code: data.code,
+        status: response.status,
+      }
+    } catch {
+      // Keep the status-only error when the response has no JSON body.
+    }
+
+    throw new ApiRequestError(error)
   }
 
   if (response.status === 204) {

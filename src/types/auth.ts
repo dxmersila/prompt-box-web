@@ -5,11 +5,16 @@ export interface User {
   name: string
   email: string
   role: UserRole
+  email_verified: boolean
 }
 
-export interface AuthResponse {
+export interface LoginResponse {
   user: User
   token: string
+}
+
+export interface RegisterResponse {
+  user: User
 }
 
 export interface LogoutResponse {

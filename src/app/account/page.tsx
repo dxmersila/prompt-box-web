@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { LogOut, User } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
@@ -15,11 +15,13 @@ export default function AccountPage() {
   const [isLoggingOut, setIsLoggingOut] = useState(false)
   const t = useTranslations()
 
-  if (status === 'loading' || status === 'guest') {
+  useEffect(() => {
     if (status === 'guest') {
       router.replace(getLoginUrl())
     }
+  }, [status, router])
 
+  if (status === 'loading' || status === 'guest') {
     return null
   }
 

@@ -18,7 +18,7 @@ import {
   removeToken,
   setToken,
 } from '@/lib/api/token'
-import type { User } from '@/types/auth'
+import type { RegisterResponse, User } from '@/types/auth'
 
 type AuthStatus = 'loading' | 'guest' | 'authenticated'
 
@@ -38,7 +38,7 @@ interface AuthContextValue {
   status: AuthStatus
   user: User | null
   login: (credentials: LoginCredentials) => Promise<void>
-  register: (data: RegisterData) => Promise<void>
+  register: (data: RegisterData) => Promise<RegisterResponse>
   logout: () => Promise<void>
 }
 
@@ -81,11 +81,7 @@ export function AuthProvider({
   }, [])
 
   const register = useCallback(async (data: RegisterData) => {
-    const response = await registerRequest(data)
-
-    setToken(response.token)
-    setUser(response.user)
-    setStatus('authenticated')
+    return registerRequest(data)
   }, [])
 
   const logout = useCallback(async () => {

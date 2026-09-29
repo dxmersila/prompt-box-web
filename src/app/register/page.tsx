@@ -19,6 +19,7 @@ import {
   getAuthSwitchUrl,
   getSafeReturnTo,
 } from '@/lib/auth/redirect'
+import { resendVerification } from '@/lib/api/authService'
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -30,7 +31,12 @@ export default function RegisterPage() {
   const [password, setPassword] = useState('')
   const [passwordConfirmation, setPasswordConfirmation] = useState('')
   const [error, setError] = useState('')
+  const [isRegistered, setIsRegistered] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isResending, setIsResending] = useState(false)
+  const [resendCooldown, setResendCooldown] = useState(0)
+  const [resendMessage, setResendMessage] = useState('')
+  const [resendError, setResendError] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [showPasswordConfirmation, setShowPasswordConfirmation] = useState(false)
   const [loginUrl, setLoginUrl] = useState('/login')
@@ -60,15 +66,43 @@ export default function RegisterPage() {
         password_confirmation: passwordConfirmation,
       })
 
-      const returnTo = getSafeReturnTo(
-        new URLSearchParams(window.location.search).get('returnTo'),
-      )
-
-      router.push(returnTo)
+      setIsRegistered(true)
     } catch {
       setError(t('auth.registerFailed'))
     } finally {
       setIsSubmitting(false)
+    }
+  }
+
+  useEffect(() => {
+    if (resendCooldown <= 0) {
+      return
+    }
+
+    const timer = window.setInterval(() => {
+      setResendCooldown((value) => Math.max(0, value - 1))
+    }, 1000)
+
+    return () => window.clearInterval(timer)
+  }, [resendCooldown])
+
+  async function handleResendVerification() {
+    if (resendCooldown > 0 || isResending) {
+      return
+    }
+
+    setResendMessage('')
+    setResendError('')
+    setIsResending(true)
+
+    try {
+      await resendVerification(email)
+      setResendMessage('auth.verificationResent')
+      setResendCooldown(60)
+    } catch {
+      setResendError('auth.resendVerificationFailed')
+    } finally {
+      setIsResending(false)
     }
   }
 
@@ -105,7 +139,60 @@ export default function RegisterPage() {
               </p>
             </div>
 
-            <div className="mt-8 space-y-5">
+            {isRegistered ? (
+              <div className="mt-8 space-y-6 text-center">
+                <div className="space-y-4 rounded-2xl border border-border bg-surface-muted px-4 py-5">
+                  <p className="text-lg font-semibold text-success">
+                    {t('auth.registerSuccessTitle')}
+                  </p>
+
+                  <p className="mx-auto max-w-sm text-justify text-sm leading-6 text-muted">
+                    {t('auth.emailVerificationDescription')}
+                  </p>
+
+                  <p className="text-sm text-foreground">
+                    {t('auth.registerSuccessEmail')}
+                    <span className="mt-1 block break-all font-semibold">
+                      {email}
+                    </span>
+                  </p>
+
+                  {resendMessage && (
+                    <p role="status" className="text-sm text-success">
+                      {t(resendMessage)}
+                    </p>
+                  )}
+
+                  {resendError && (
+                    <p role="alert" className="text-sm text-destructive">
+                      {t(resendError)}
+                    </p>
+                  )}
+
+                  <Button
+                    type="button"
+                    isLoading={isResending}
+                    disabled={resendCooldown > 0}
+                    onClick={handleResendVerification}
+                  >
+                    {resendCooldown > 0
+                      ? t('auth.resendVerificationCountdown').replace(
+                          '{seconds}',
+                          String(resendCooldown),
+                        )
+                      : t('auth.resendVerification')}
+                  </Button>
+                </div>
+
+                <Link
+                  href={loginUrl}
+                  className="flex h-12 w-full items-center justify-center rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20"
+                >
+                  {t('auth.registerSuccessLogin')}
+                </Link>
+              </div>
+            ) : (
+              <div className="mt-8 space-y-5">
               <label className="flex flex-col gap-2">
                 <span className="text-sm font-medium text-foreground">
                   {t('auth.name')}
@@ -235,7 +322,8 @@ export default function RegisterPage() {
                   {t('auth.login')}
                 </Link>
               </p>
-            </div>
+              </div>
+            )}
           </div>
         </form>
       </div>

@@ -12,6 +12,8 @@ import {
   getAuthSwitchUrl,
   getSafeReturnTo,
 } from '@/lib/auth/redirect'
+import { resendVerification } from '@/lib/api/authService'
+import { ApiRequestError } from '@/lib/api/client'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -22,8 +24,13 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isResending, setIsResending] = useState(false)
+  const [resendCooldown, setResendCooldown] = useState(0)
+  const [resendMessage, setResendMessage] = useState('')
+  const [resendError, setResendError] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [registerUrl, setRegisterUrl] = useState('/register')
+  const [isEmailNotVerified, setIsEmailNotVerified] = useState(false)
 
   useEffect(() => {
     const returnTo = getSafeReturnTo(
@@ -37,9 +44,24 @@ export default function LoginPage() {
     }
   }, [router, status])
 
+  useEffect(() => {
+    if (resendCooldown <= 0) {
+      return
+    }
+
+    const timer = window.setInterval(() => {
+      setResendCooldown((value) => Math.max(0, value - 1))
+    }, 1000)
+
+    return () => window.clearInterval(timer)
+  }, [resendCooldown])
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setError('')
+    setIsEmailNotVerified(false)
+    setResendMessage('')
+    setResendError('')
     setIsSubmitting(true)
 
     try {
@@ -50,10 +72,37 @@ export default function LoginPage() {
       )
 
       router.push(returnTo)
-    } catch {
-      setError(t('auth.loginFailed'))
+    } catch (error) {
+      if (
+        error instanceof ApiRequestError &&
+        error.code === 'email_not_verified'
+      ) {
+        setIsEmailNotVerified(true)
+      } else {
+        setError(t('auth.loginFailed'))
+      }
     } finally {
       setIsSubmitting(false)
+    }
+  }
+
+  async function handleResendVerification() {
+    if (resendCooldown > 0 || isResending) {
+      return
+    }
+
+    setResendMessage('')
+    setResendError('')
+    setIsResending(true)
+
+    try {
+      await resendVerification(email)
+      setResendMessage('auth.verificationResent')
+      setResendCooldown(60)
+    } catch {
+      setResendError('auth.resendVerificationFailed')
+    } finally {
+      setIsResending(false)
     }
   }
 
@@ -139,6 +188,47 @@ export default function LoginPage() {
                   </button>
                 </div>
               </label>
+
+              {isEmailNotVerified && (
+                <div className="space-y-4 rounded-2xl border border-border bg-surface-muted px-4 py-5 text-center">
+                  <p
+                    role="alert"
+                    className="text-sm font-medium leading-6 text-foreground"
+                  >
+                    {t('auth.emailNotVerified')}
+                  </p>
+
+                  <p className="mx-auto max-w-sm text-justify text-sm leading-6 text-muted">
+                    {t('auth.emailVerificationDescription')}
+                  </p>
+
+                  {resendMessage && (
+                    <p role="status" className="text-sm text-success">
+                      {t(resendMessage)}
+                    </p>
+                  )}
+
+                  {resendError && (
+                    <p role="alert" className="text-sm text-destructive">
+                      {t(resendError)}
+                    </p>
+                  )}
+
+                  <Button
+                    type="button"
+                    isLoading={isResending}
+                    disabled={resendCooldown > 0}
+                    onClick={handleResendVerification}
+                  >
+                    {resendCooldown > 0
+                      ? t('auth.resendVerificationCountdown').replace(
+                          '{seconds}',
+                          String(resendCooldown),
+                        )
+                      : t('auth.resendVerification')}
+                  </Button>
+                </div>
+              )}
 
               {error && (
                 <p
