@@ -90,7 +90,7 @@
     "verifyEmailFailedTitle": "Verification failed",
     "verifyEmailFailedDescription": "This verification link is invalid or has expired. Please request a new verification email.",
     "verifyEmailRegister": "Back to registration",
-    "emailVerificationDescription": "To verify your account, open your email and click the verification link sent to your email address. If you didn't receive the email, you can resend it below."
+    "emailVerificationDescription": "Check your Inbox for the verification email. If you don't see it, check Spam, Junk, or Promotions."
   },
   "account": {
     "title": "Account",
