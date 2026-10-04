@@ -3,6 +3,8 @@ import HeroSection from '@/components/home/HeroSection'
 import LatestItemsSection from '@/components/home/LatestItemsSection'
 import SubscriptionPromoSection from '@/components/home/SubscriptionPromoSection'
 
+export const dynamic = 'force-dynamic'
+
 export default async function Home() {
   const itemsResponse = await listItems({
     sort: 'latest',
