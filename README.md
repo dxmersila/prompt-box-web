@@ -97,7 +97,7 @@ Business rules, authorization decisions, pricing, payments, subscriptions, and a
 
 Prompt Box Web was created from the stable **Armin Web Template**.
 
-The Template provides the reusable application foundation, while Prompt Box contains product-specific requirements, UI, content, branding, and configuration.
+The Template provides the reusable application foundation, while this repository contains Prompt Box-specific requirements, UI, content, branding, and configuration.
 
 Product-specific changes should remain in Prompt Box. Reusable architectural improvements should only be introduced into the Armin Web Template when they represent a genuine requirement that benefits multiple product instances.
 
