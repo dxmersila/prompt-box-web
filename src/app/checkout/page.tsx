@@ -9,7 +9,6 @@ import { useAuth } from '@/components/auth/AuthProvider'
 import { useCart } from '@/components/cart/CartProvider'
 import Button from '@/components/ui/Button'
 import EmptyState from '@/components/ui/EmptyState'
-import LoadingSpinner from '@/components/ui/LoadingSpinner'
 import {
   createItemOrder,
   getOrder,
