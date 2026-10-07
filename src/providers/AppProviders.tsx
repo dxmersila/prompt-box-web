@@ -6,6 +6,7 @@ import I18nProvider from '@/i18n/I18nProvider'
 import { LocaleProvider } from '@/i18n/LocaleProvider'
 import { AuthProvider } from '@/components/auth/AuthProvider'
 import { CartProvider } from '@/components/cart/CartProvider'
+import AnalyticsTracker from '@/components/analytics/AnalyticsTracker'
 
 export default function AppProviders({
   children,
@@ -19,6 +20,7 @@ export default function AppProviders({
         <I18nProvider>
           <AuthProvider>
             <CartProvider>
+              <AnalyticsTracker />
               {children}
             </CartProvider>
           </AuthProvider>
