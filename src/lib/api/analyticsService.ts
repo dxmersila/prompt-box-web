@@ -16,3 +16,24 @@ export async function recordVisit(
     },
   )
 }
+
+export async function recordPromptCopy(
+  visitorId: string,
+  sessionId: string,
+  itemId: number,
+  token: string,
+): Promise<void> {
+  return apiClient<void>(
+    '/analytics/events',
+    {
+      method: 'POST',
+      token,
+      body: JSON.stringify({
+        event: 'prompt_copy',
+        visitor_id: visitorId,
+        session_id: sessionId,
+        item_id: itemId,
+      }),
+    },
+  )
+}

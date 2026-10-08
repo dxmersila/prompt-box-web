@@ -7,10 +7,15 @@ import { useRouter } from 'next/navigation'
 
 import { useAuth } from '@/components/auth/AuthProvider'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
+import { recordPromptCopy } from '@/lib/api/analyticsService'
 import { getItemContent } from '@/lib/api/itemContentService'
 import { getToken } from '@/lib/api/token'
 import { useTranslations } from '@/hooks/useTranslations'
 import { getLoginUrl } from '@/lib/auth/redirect'
+import {
+  getSessionId,
+  getVisitorId,
+} from '@/lib/analytics/session'
 
 interface ItemContentPageProps {
   params: Promise<{
@@ -29,6 +34,7 @@ export default function ItemContentPage({
 
   const [slug, setSlug] = useState('')
   const [content, setContent] = useState('')
+  const [itemId, setItemId] = useState<number | null>(null)
   const [state, setState] = useState<ContentState>('loading')
   const [isCopied, setIsCopied] = useState(false)
 
@@ -69,6 +75,7 @@ export default function ItemContentPage({
         }
 
         setContent(response.content)
+        setItemId(response.item_id)
         setState('ready')
       })
       .catch(() => {
@@ -85,6 +92,21 @@ export default function ItemContentPage({
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(content)
+
+      const token = getToken()
+
+      if (token && itemId !== null) {
+        const visitorId = getVisitorId()
+        const sessionId = getSessionId()
+
+        void recordPromptCopy(
+          visitorId,
+          sessionId,
+          itemId,
+          token,
+        ).catch(() => {})
+      }
+
       setIsCopied(true)
 
       window.setTimeout(() => {
