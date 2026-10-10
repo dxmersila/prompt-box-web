@@ -29,7 +29,7 @@ export async function recordPromptCopy(
       method: 'POST',
       token,
       body: JSON.stringify({
-        event: 'prompt_copy',
+        event: 'item_copy',
         visitor_id: visitorId,
         session_id: sessionId,
         item_id: itemId,
