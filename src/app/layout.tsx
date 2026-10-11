@@ -6,7 +6,15 @@ import AppProviders from '@/providers/AppProviders'
 
 export const metadata: Metadata = {
   title: 'Prompt Box',
-  description: 'Armin Web Application',
+  description: 'Prompt Box',
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon-96x96.png', type: 'image/png', sizes: '96x96' },
+    ],
+    apple: '/apple-touch-icon.png',
+  },
+  manifest: '/site.webmanifest',
 }
 
 export default function RootLayout({
